@@ -1,6 +1,6 @@
 # JQ
-Elixir wrapper for [jq](https://stedolan.github.io/jq/) you must have 
-jq installed and avalible in your `$PATH`
+Elixir wrapper for [jq](https://stedolan.github.io/jq/). 
+Note: you must have jq installed and avalible in your `$PATH`
 
 ## Installation
 * Install jq `brew install jq`
