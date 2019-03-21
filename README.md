@@ -14,5 +14,14 @@ def deps do
 end
 ```
 
+## Usage
+```bash
+iex> JQ.query(%{key: "value"}, ".key")
+{:ok, "value"}
+
+iex> JQ.query!(%{key: "value"}, ".key")
+"value"
+```
+
 * [https://hexdocs.pm/jq](https://hexdocs.pm/jq).
 
