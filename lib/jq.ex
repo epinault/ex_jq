@@ -12,65 +12,63 @@ defmodule JQ do
       "value"
 
   """
+  alias JQ.{MaxByteSizeExceededException, NoResultException, SystemCmdException, UnknownException}
   require Logger
+
+  @default_options %{max_byte_size: nil}
 
   def query(payload, query, options \\ [])
 
   @spec query(any(), String.t(), list()) :: {:ok, any()} | {:error, :cmd | :unknown}
-  def query(payload, query, _options) do
-    with {:ok, _} <- JQ.Query.validate(query),
-         {:ok, json} <- Poison.encode(payload),
-         {:ok, fd, file_path} <- Temp.open(),
-         :ok <- IO.write(fd, json),
-         :ok <- File.close(fd),
-         {value, code} when code == 0 <-
-           System.cmd("jq", [query, file_path], stderr_to_stdout: true) do
-      File.rm!(file_path)
-      Poison.decode(value)
-    else
-      {message, code} when is_integer(code) and code != 0 ->
-        Logger.error(cmd_error(message, code))
-        {:error, :cmd}
+  def query(payload, query, options) do
+    {:ok, query!(payload, query, options)}
+  rescue
+    _ in NoResultException ->
+      {:ok, nil}
 
-      error ->
-        Logger.error("Unexpected error. #{inspect(error)}")
-        {:error, :unknown}
-    end
+    e in [SystemCmdException, UnknownException] ->
+      Logger.warn(e.message)
+      {:error, :cmd}
+
+    e in MaxByteSizeExceededException ->
+      Logger.warn(e.message)
+      {:error, :max_byte_size_exceeded}
   end
 
   def query!(payload, query, options \\ [])
 
   @spec query!(any(), String.t(), list()) :: any()
-  def query!(payload, query, _options) do
-    json = Poison.encode!(payload)
+  def query!(payload, query, options) do
+    %{max_byte_size: max_byte_size} = Enum.into(options, @default_options)
+
+    json = payload |> Poison.encode!() |> validate_max_byte_size(max_byte_size)
+
     {fd, file_path} = Temp.open!()
     IO.write(fd, json)
     File.close(fd)
 
-    case System.cmd("jq", [query, file_path], stderr_to_stdout: true) do
-      {value, code} when is_integer(code) and code == 0 ->
-        File.rm!(file_path)
-        result = Poison.decode!(value)
+    try do
+      case System.cmd("jq", [query, file_path], stderr_to_stdout: true) do
+        {_, code} = error when is_integer(code) and code != 0 ->
+          raise(SystemCmdException, result: error, command: "jq", args: [query, file_path])
 
-        unless result do
-          raise "NO_VALUE_FOUND"
-        end
+        {value, code} when is_integer(code) and code == 0 ->
+          result = Poison.decode!(value)
+          unless result, do: raise(NoResultException)
+          result
 
-        result
-
-      {message, code} when is_integer(code) and code != 0 ->
-        raise cmd_error(message, code)
-
-      error ->
-        raise "UNKNOWN #{inspect(error)}"
+        error ->
+          raise(UnknownException, error)
+      end
+    after
+      File.rm!(file_path)
     end
   end
 
-  defp cmd_error(message, code) do
-    """
-    Error executing jq bash command. 
-      exit code: #{inspect(code)}
-      message: #{inspect(message)}
-    """
+  defp validate_max_byte_size(json, max_byte_size)
+       when is_integer(max_byte_size) and byte_size(json) > max_byte_size do
+    raise(MaxByteSizeExceededException, size: byte_size(json), max_byte_size: max_byte_size)
   end
+
+  defp validate_max_byte_size(json, _), do: json
 end

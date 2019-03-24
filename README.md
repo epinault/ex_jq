@@ -9,7 +9,7 @@ Note: you must have jq installed and avalible in your `$PATH`
 ```elixir
 def deps do
   [
-    {:jq, "~> 0.1"}
+    {:jq, "~> 1.0"}
   ]
 end
 ```
