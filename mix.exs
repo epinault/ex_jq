@@ -4,7 +4,7 @@ defmodule JQ.MixProject do
   def project do
     [
       app: :jq,
-      version: "0.1.0",
+      version: "1.0.0",
       elixir: "~> 1.7",
       description: "elixir wrapper for jq",
       package: package(),
@@ -20,7 +20,7 @@ defmodule JQ.MixProject do
     ]
   end
 
-  def package do 
+  def package do
     [
       licenses: ["MIT"],
       files: ~w(CHANGELOG* config LICENSE* README* lib mix.exs .formatter.exs),
@@ -43,7 +43,8 @@ defmodule JQ.MixProject do
       {:poison, "~> 4.0"},
       {:temp, "~> 0.4"},
       {:credo, "~> 1.0"},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:mock, "~> 0.3.3", only: :test}
     ]
   end
 end
