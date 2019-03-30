@@ -17,9 +17,17 @@ defmodule JQ do
 
   @default_options %{max_byte_size: nil}
 
+  @doc ~S"""
+  Execute a jq query on an elixir structure.
+
+  Internally invokes `JQ.query!/3` and rescues from all exceptions.
+
+  If a `JQ.NoResultException` is raised, `{:ok, nil}` is returned
+  """
   def query(payload, query, options \\ [])
 
-  @spec query(any(), String.t(), list()) :: {:ok, any()} | {:error, :cmd | :unknown}
+  @spec query(any(), String.t(), list()) ::
+          {:ok, any()} | {:error, :cmd | :unknown | :max_byte_size_exceeded}
   def query(payload, query, options) do
     {:ok, query!(payload, query, options)}
   rescue
@@ -33,8 +41,39 @@ defmodule JQ do
     e in MaxByteSizeExceededException ->
       Logger.warn(e.message)
       {:error, :max_byte_size_exceeded}
+
+    error ->
+      Logger.warn("unknown error. error: #{inspect(error)}")
+      {:error, :unknown}
   end
 
+  @doc ~S"""
+  Execute a jq query on an elixir structure.
+
+  * `payload` is any elixir structure
+  * `query` a jq query as a string
+
+  Internally this function encodes the `payload` into JSON, writes the JSON to
+  a temporary file, invokes the jq executable on the temporary file with the supplied
+  jq `query`.
+
+  The result is then decoded from JSON back into an elixir structure.
+  The temporary file is removed, regardless of the outcome. `System.cmd/3` is called
+  with the `:stderr_to_stdout` option.
+
+  ## Options
+    * `:max_byte_size` - integer representing the maximum number of bytes allowed for the payload, defaults to `nil`.
+
+  ## Error reasons
+  * `JQ.MaxByteSizeExceededException` - when the byte_size of the encoded elixir structure is greater than the `:max_byte_size` value
+  * `JQ.SystemCmdException` - when System.cmd/3 returns a non zero exit code
+  * `JQ.NoResultException` - when no result was returned
+  * `JQ.UnknownException` - when System.cmd/3 returns any other error besides those already handled
+  * `Poison.EncodeError` - when there is an error encoding `payload`
+  * `Poison.DecodeError` - when there is an error decoding the jq query result
+  * `Temp.Error` - when there is an error creating a temporary file
+  * `File.Error` - when there is an error removing a temporary file
+  """
   def query!(payload, query, options \\ [])
 
   @spec query!(any(), String.t(), list()) :: any()
