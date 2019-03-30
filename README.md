@@ -1,9 +1,12 @@
 # JQ
 Elixir wrapper for [jq](https://stedolan.github.io/jq/). 
-Note: you must have jq installed and avalible in your `$PATH`
+
+**Note:** you must have jq installed and avalible in your `$PATH`
 
 ## Installation
-* Install jq `brew install jq`
+* Install jq 
+    * `brew install jq`
+    * [Other jq installation options](https://stedolan.github.io/jq/download/)
 * add `jq` to your list of dependencies in `mix.exs`:
 
 ```elixir

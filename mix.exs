@@ -12,7 +12,8 @@ defmodule JQ.MixProject do
       deps: deps(),
       name: "jq",
       source_url: "https://github.com/spencerdcarlson/ex_jq",
-      homepage_url: "https://github.com/spencerdcarlson/ex_jq"
+      homepage_url: "https://github.com/spencerdcarlson/ex_jq",
+      docs: [main: "JQ", extras: ["README.md"]]
     ]
   end
 
