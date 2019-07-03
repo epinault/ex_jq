@@ -4,7 +4,7 @@ defmodule JQ.MixProject do
   def project do
     [
       app: :jq,
-      version: "1.0.1",
+      version: "1.0.2",
       elixir: "~> 1.7",
       description: "elixir wrapper for jq",
       package: package(),
@@ -12,7 +12,8 @@ defmodule JQ.MixProject do
       deps: deps(),
       name: "jq",
       source_url: "https://github.com/spencerdcarlson/ex_jq",
-      homepage_url: "https://github.com/spencerdcarlson/ex_jq"
+      homepage_url: "https://github.com/spencerdcarlson/ex_jq",
+      docs: [main: "JQ", extras: ["README.md"]]
     ]
   end
 
