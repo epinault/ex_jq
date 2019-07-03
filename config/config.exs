@@ -3,8 +3,8 @@
 use Mix.Config
 
 config :logger,
-       level: :info,
-       metadata: [:all],
-       format: "[$level][$metadata] $message\n"
+  level: :info,
+  metadata: [:all],
+  format: "[$level][$metadata] $message\n"
 
 import_config "#{Mix.env()}.exs"

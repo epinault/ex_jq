@@ -41,8 +41,8 @@ defmodule JQ.MixProject do
       {:credo, "~> 1.0", only: :dev, runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:mock, "~> 0.3.3", only: :test},
-#      {:husky, "~> 0.2", only: :dev, runtime: false}
-      {:husky, path: "/Users/sc/code/husky-elixir", only: :dev, runtime: false}
+      {:husky, "~> 1.0", only: :dev, runtime: false}
+      #      {:husky, path: "/Users/sc/code/husky-elixir", only: :dev, runtime: false}
     ]
   end
 end

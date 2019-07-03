@@ -7,6 +7,7 @@ defmodule JQTest do
   describe "JQ.query" do
     test "simple JQ querry" do
       assert {:ok, "spencer"} == JQ.query(%{name: "spencer"}, ".name")
+      assert false
     end
 
     test "handle empty result" do
@@ -15,6 +16,7 @@ defmodule JQTest do
 
     test "string keys" do
       assert {:ok, %{"key" => 1}} == JQ.query([%{key: 1}], ".[0]")
+      #      assert false
     end
 
     test "filter and rename keys" do
