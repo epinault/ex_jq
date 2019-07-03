@@ -7,7 +7,6 @@ defmodule JQTest do
   describe "JQ.query" do
     test "simple JQ querry" do
       assert {:ok, "spencer"} == JQ.query(%{name: "spencer"}, ".name")
-      assert false
     end
 
     test "handle empty result" do
