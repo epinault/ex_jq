@@ -35,15 +35,15 @@ defmodule JQ do
       {:ok, nil}
 
     e in [SystemCmdException, UnknownException] ->
-      Logger.warn(e.message)
+      Logger.warning(e.message)
       {:error, :cmd}
 
     e in MaxByteSizeExceededException ->
-      Logger.warn(e.message)
+      Logger.warning(e.message)
       {:error, :max_byte_size_exceeded}
 
     error ->
-      Logger.warn("unknown error. error: #{inspect(error)}")
+      Logger.warning("unknown error. error: #{inspect(error)}")
       {:error, :unknown}
   end
 
@@ -92,9 +92,13 @@ defmodule JQ do
           raise(SystemCmdException, result: error, command: "jq", args: [query, file_path])
 
         {value, code} when is_integer(code) and code == 0 ->
-          result = Poison.decode!(value)
-          unless result, do: raise(NoResultException)
-          result
+          case Poison.decode!(value) do
+            nil ->
+              raise(NoResultException)
+
+            result ->
+              result
+          end
 
         error ->
           raise(UnknownException, error)

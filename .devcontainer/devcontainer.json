@@ -1,0 +1,30 @@
+{
+  "name": "ExJQ",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "USER": "${localEnv:USER}"
+    }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
+  "workspaceFolder": "/app",
+  "remoteUser": "${localEnv:USER}",
+  "customizations": {
+    "settings": {
+      "terminal.integrated.shell.linux": null
+    },
+    "vscode": {
+      "extensions": [
+        "jakebecker.elixir-ls",
+        "sainnhe.gruvbox-material",
+        "joshjg.vscode-credo",
+        "4ops.terraform",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "HOST_WORKSPACE_PATH": "${localWorkspaceFolder}"
+  }
+}

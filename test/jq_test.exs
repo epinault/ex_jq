@@ -53,6 +53,10 @@ defmodule JQTest do
       assert {:error, :max_byte_size_exceeded} =
                JQ.query(%{names: ["spencer", "alex"]}, ".names", max_byte_size: 1)
     end
+
+    test "handles boolean values" do
+      assert {:ok, false} == JQ.query(%{"valid" => false}, ".valid")
+    end
   end
 
   describe "JQ.query!" do
